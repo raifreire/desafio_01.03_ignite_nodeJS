@@ -39,11 +39,9 @@ app.put("/repositories/:id", (request, response) => {
   }
 
   const repository = { ...repositories[repositoryIndex], ...updatedRepository };
-  console.log();
-  if (repository.likes != 0) {
-    return response.json("Not input likes");
-  }
+
   repositories[repositoryIndex] = repository;
+  repository.likes = 0;
 
   return response.json(repository);
 });
@@ -51,13 +49,13 @@ app.put("/repositories/:id", (request, response) => {
 app.delete("/repositories/:id", (request, response) => {
   const { id } = request.params;
 
-  const repositoryIndex = repositories.findIndex(repository => repository.id === id);
-
-  if (repositoryIndex > 0) {
+  const index = repositories.findIndex((index) => index.id === id);
+  console.log(index)
+  if (index === -1) {
     return response.status(404).json({ error: "Repository not found" });
   }
 
-  repositories.splice(repositoryIndex, 1);
+  repositories.splice(index, 1);
 
   return response.status(204).send();
 });
@@ -65,15 +63,15 @@ app.delete("/repositories/:id", (request, response) => {
 app.post("/repositories/:id/like", (request, response) => {
   const { id } = request.params;
 
-  repositoryIndex = repositories.findIndex(repository => repository.id === id);
+  const index = repositories.findIndex((index) => index.id === id);
 
-  if (repositoryIndex < 0) {
+  if (index === -1) {
     return response.status(404).json({ error: "Repository not found" });
   }
 
-  const likes = ++repositories[repositoryIndex].likes;
+  repositories[index].likes++;
 
-  return response.json('likes');
+  return response.json(repositories[index]);
 });
 
 module.exports = app;
